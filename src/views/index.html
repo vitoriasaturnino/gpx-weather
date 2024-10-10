@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Map</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="https://openlayers.org/en/v4.6.5/css/ol.css" type="text/css">
+    <script src="https://openlayers.org/en/v4.6.5/build/ol.js"></script>
+  </head>
+
+  <body>
+    <div id="app">
+      <h1>Previsão do Tempo</h1>
+      <div class="form-container">
+        <div class="form-input">
+          <label for="state">Estado</label>
+          <select id="state" class="input-field"></select>
+        </div>
+        <div class="form-input">
+          <label for="city">Cidade</label>
+          <select id="city" class="input-field"></select>
+        </div>
+        <button id="fetchWeather">Consultar</button>
+      </div>
+
+      <div class="weather-container">
+        <div class="weather-item">
+          <label>Clima</label>
+          <input type="text" id="climate" class="weather-field" disabled>
+        </div>
+        <div class="weather-item">
+          <label>Máxima</label>
+          <input type="text" id="max" class="weather-field" disabled>
+        </div>
+        <div class="weather-item">
+          <label>Fase da Lua</label>
+          <input type="text" id="moon" class="weather-field" disabled>
+        </div>
+        <div class="weather-item">
+          <label>Mínima</label>
+          <input type="text" id="min" class="weather-field" disabled>
+        </div>
+      </div>
+
+      <div id="map" class="map-section"></div>
+
+      <div id="forecast" class="forecast-section">
+        <h2>Previsão para os Próximos 3 Dias</h2>
+        <div id="forecastContainer"></div>
+      </div>
+    </div>
+
+    <script src="js/app.js" type="module"></script>
+  </body>
+
+</html>

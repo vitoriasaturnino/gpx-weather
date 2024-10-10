@@ -33,11 +33,10 @@ npm install
   mv .env-sample .env
   ```
 
-- Abra o arquivo `.env` e insira suas **API Keys** da **HG Brasil Weather** e outras chaves necessárias:
+- Abra o arquivo `.env` e insira suas **API Keys** da **HG Brasil Weather**:
 
   ```
   HG_WEATHER_API_KEY=
-  GEO_API_KEY=
   ```
 
 ### 4. Executando o projeto

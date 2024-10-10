@@ -1,7 +1,15 @@
 import StateService from './data/states.js';
 import CityService from './data/cities.js';
 
+/**
+ * Classe responsável por controlar o mapa utilizando a biblioteca OpenLayers.
+ */
 class MapController {
+  /**
+   * Cria uma instância de MapController.
+   *
+   * @param {string} containerId - O ID do contêiner HTML onde o mapa será renderizado.
+   */
   constructor(containerId) {
     this.map = new ol.Map({
       target: containerId,
@@ -11,24 +19,52 @@ class MapController {
         }),
       ],
       view: new ol.View({
-        center: ol.proj.fromLonLat([-51.9253, -14.235]),
+        center: ol.proj.fromLonLat([-51.9253, -14.235]), // Coordenadas do Brasil
         zoom: 4,
       }),
     });
   }
 
+  /**
+   * Atualiza a posição do mapa com base nas coordenadas fornecidas.
+   *
+   * @param {Array<number>} coordinates - Um array contendo [longitude, latitude].
+   */
   updateMap(coordinates) {
     this.map.getView().setCenter(ol.proj.fromLonLat(coordinates));
     this.map.getView().setZoom(12);
   }
 }
 
+/**
+ * Classe responsável por lidar com as requisições de clima e geocodificação.
+ */
 class WeatherService {
+  /**
+   * Cria uma instância de WeatherService.
+   *
+   * @param {string} apiKey - A chave de API da HG Brasil para requisições de clima.
+   */
   constructor(apiKey) {
+    /**
+     * Chave da API HG Brasil.
+     * @type {string}
+     */
     this.apiKey = apiKey;
+
+    /**
+     * Chave da API OpenWeather para geocodificação.
+     * @type {string}
+     */
     this.geoApiKey = '0b696f84c6de101cf0f2b3c8b1a666b3'; // Sua API Key para geoencoding
   }
 
+  /**
+   * Obtém as coordenadas de uma cidade usando a API OpenWeather.
+   *
+   * @param {string} city - Nome da cidade.
+   * @returns {Promise<Array<number>>} Um array contendo [longitude, latitude] ou null se não encontrado.
+   */
   async getCityCoordinates(city) {
     const cityName = `${city},BR`;
     const geoUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${this.geoApiKey}`;
@@ -48,6 +84,12 @@ class WeatherService {
     }
   }
 
+  /**
+   * Obtém os dados de clima para uma cidade específica.
+   *
+   * @param {string} city - Nome da cidade.
+   * @returns {Promise<Object>} Os dados de clima ou null se houver erro.
+   */
   async getWeatherData(city) {
     try {
       const response = await fetch(`/api/weather?city=${city}`);
@@ -60,7 +102,18 @@ class WeatherService {
   }
 }
 
+/**
+ * Classe responsável por controlar a interface de usuário (UI).
+ */
 class UIController {
+  /**
+   * Cria uma instância de UIController.
+   *
+   * @param {MapController} mapController - A instância de MapController.
+   * @param {WeatherService} weatherService - A instância de WeatherService.
+   * @param {StateService} stateService - A instância de StateService.
+   * @param {CityService} cityService - A instância de CityService.
+   */
   constructor(mapController, weatherService, stateService, cityService) {
     this.mapController = mapController;
     this.weatherService = weatherService;
@@ -78,6 +131,9 @@ class UIController {
     this.addEventListeners();
   }
 
+  /**
+   * Carrega os estados do Brasil no dropdown utilizando a StateService.
+   */
   async loadStates() {
     const states = await this.stateService.getStates();
     states.forEach(state => {
@@ -88,6 +144,11 @@ class UIController {
     });
   }
 
+  /**
+   * Carrega as cidades de um estado selecionado no dropdown.
+   *
+   * @param {string} stateCode - Código do estado selecionado.
+   */
   async loadCities(stateCode) {
     this.citySelect.innerHTML = '<option value="">Selecione a cidade</option>';
     const cities = await this.cityService.getCities(stateCode);
@@ -99,6 +160,12 @@ class UIController {
     });
   }
 
+  /**
+   * Traduz as fases da lua do inglês para o português.
+   *
+   * @param {string} phase - Fase da lua em inglês.
+   * @returns {string} A fase da lua traduzida ou o valor original se não for encontrado.
+   */
   translateMoonPhase(phase) {
     const phases = {
       'new_moon': 'Lua Nova',
@@ -113,6 +180,11 @@ class UIController {
     return phases[phase] || phase;
   }
 
+  /**
+   * Exibe a previsão do tempo para os próximos 3 dias.
+   *
+   * @param {Array<Object>} forecast - Array de objetos contendo a previsão do tempo.
+   */
   displayForecast(forecast) {
     this.forecastContainer.innerHTML = '';
 
@@ -130,6 +202,9 @@ class UIController {
     });
   }
 
+  /**
+   * Adiciona os listeners de eventos para interações do usuário.
+   */
   addEventListeners() {
     this.stateSelect.addEventListener('change', async () => {
       const stateCode = this.stateSelect.value;
